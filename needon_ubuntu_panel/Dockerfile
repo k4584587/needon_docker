@@ -9,6 +9,7 @@
 
 
 RUN apt-get -yf autoremove \
-    && apt-get clean 
+    && apt-get clean \
+    && chmod 555 -R /etc/mysql/conf.d
 
  COPY root* /

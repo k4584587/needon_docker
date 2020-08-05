@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+
+  panel:
+    build: .
+    container_name: needon_panel
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports: 
+        - 7070:8080
+    links: 
+        - db
+
+  db:
+    image: k45845871/needon_panel:mysql
+    container_name: needon_db
+    environment:
+        - MYSQL_ROOT_PASSWORD=needon_panel
+        - MYSQL_DATABASE=needon_panel
+    volumes:
+        - dbdata:/var/lib/mysql
+    ports: 
+        - 3306:3306
+
+volumes:
+  dbdata:
