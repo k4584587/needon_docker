@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+
+  panel:
+    image: k45845871/gunuboard
+    container_name: gunuboard
+    volumes:
+      - "./config/php.ini:/usr/local/etc/php/conf.d/gunu.ini"
+      - "./www:/var/www/html"
+    ports: 
+        - 7070:80
+    links: 
+        - db
+
+  db:
+    image: k45845871/needon_mysql
+    container_name: db
+    environment:
+        - MYSQL_ROOT_PASSWORD=test4588
+        - MYSQL_DATABASE=gubu
+    volumes:
+        - dbdata:/var/lib/mysql
+    ports: 
+        - 3306:3306
+
+volumes:
+  dbdata:
