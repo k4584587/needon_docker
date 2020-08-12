@@ -23,6 +23,5 @@ RUN ln -snf /usr/share/zonein
 
 COPY root* /
 
-RUN chmod +x /docker-entrypoint.sh
-
-EXPOSE 8888
+RUN chmod +x /needon-nginx-script.sh \
+    && chmod +x /docker-entrypoint.sh

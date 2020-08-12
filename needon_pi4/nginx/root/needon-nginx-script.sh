@@ -1,35 +1,27 @@
-#!/bin/sh
+#!/bin/bash
 
-set -e
+fileName='/needon/nginx.conf'
+if [ ! -f $fileName ]; then
 
-ME=$(basename $0)
+    echo "[!] 설정파일을 복사합니다."
+    mkdir -p /needon/conf.d
+    rsync --update -raz /etc/nginx/nginx.conf /needon
+    rsync --update -raz /etc/nginx/conf.d /needon
 
-dir='/needon/config/nginx'
+    #nginx.conf 심볼링크 걸기
+    ln -fs /needon/nginx.conf /etc/nginx/nginx.conf
 
-echo "[!] nginx 시작 하는중입니다."
-echo ""
-
-if [ ! -d $dir ]; then
-
-    echo "[!] 설정파일을 갱신합니다."
-
-    mkdir /needon/config/nginx
-    mkdir /needon/config/nginx/conf.d
-    
-    rsync --update -raz /etc/nginx/nginx.conf /needon/config/nginx
-    rsync --update -raz /etc/nginx/conf.d/* /needon/config/nginx/conf.d
-    
-    ln -sfn /needon/config/nginx/nginx.conf /etc/nginx/nginx.conf
-   
-
-    rm -rf /etc/nginx/conf.d/
-    ln -sfn /needon/config/nginx/conf.d/ /etc/nginx/
+    rm -rf /etc/nginx/conf.d
+    ln -fs /needon/conf.d/ /etc/nginx
 
 else
 
-ln -sfn /needon/config/nginx/nginx.conf /etc/nginx/nginx.conf
+    echo "[!] 설정된 nginx 파일을 불러옵니다."
+    
+    #nginx.conf 심볼링크 걸기
+    ln -fs /needon/nginx.conf /etc/nginx/nginx.conf
 
-rm -rf /etc/nginx/conf.d/
-ln -sfn /needon/config/nginx/conf.d/ /etc/nginx/
+    rm -rf /etc/nginx/conf.d
+    ln -fs /needon/conf.d/ /etc/nginx
 
 fi
