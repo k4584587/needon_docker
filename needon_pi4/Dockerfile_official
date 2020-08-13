@@ -1,0 +1,9 @@
+ FROM linuxserver/letsencrypt
+
+ENV TZ='Asia/Seoul'
+
+RUN apk update \
+    && apk add tzdata \
+    net-tools \
+    && echo "$TZ" >  /etc/timezone \
+    && echo $(date)

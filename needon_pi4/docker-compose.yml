@@ -1,0 +1,79 @@
+version: '3'
+
+services:
+
+  nginx:
+    container_name: nginx
+    restart: always
+    build: .
+    volumes:
+      - "./config:/needon"
+    ports: 
+      - "80:80"
+      - "443:443"
+    volumes: 
+      - "./config/nginx:/config"
+      - "/home/www:/var/www/html"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - SUBDOMAINS=wildcard
+      - URL=needon.dev
+      - VALIDATION=dns
+      - DNSPLUGIN=cloudflare
+      - EMAIL=admin@needon.kr
+      - DHLEVEL=2048
+      - STAGING=false
+    links:
+      - "php_fpm"
+      - "db"
+      - "phpmyadmin"
+  
+
+  php_fpm:
+      container_name: php_fpm
+      restart: always
+      build: ./config/php
+      volumes: 
+        - "/home/www:/var/www/html"
+        - "./config/php/php.ini:/usr/local/etc/php/conf.d/custom.ini"
+      depends_on:
+        - "db"
+        - "smtp"  
+
+
+  db:
+    container_name: db
+    restart: always
+    build: ./config/mysql
+    privileged: true
+    environment:
+        - MYSQL_ROOT_PASSWORD=pwd
+        - MYSQL_DATABASE=needon_db
+    volumes:
+        - dbdata:/var/lib/mysql
+        - ./config/mysql/my.cnf:/etc/mysql/conf.d/needon.cnf
+    ports: 
+        - 3306:3306
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    restart: always
+    build: ./config/phpmyadmin
+    restart: always
+    ports:
+      - "8083:80"
+    links:
+      - "db:db"
+
+  smtp:
+    container_name: smtp
+    restart: always
+    build: ./config/smtp
+    restart: always
+    environment:
+      - GMAIL_USER=user
+      - GMAIL_PASSWORD=pwd
+
+volumes:
+  dbdata:
